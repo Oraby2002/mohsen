@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="inherit_event_attendee_list" inherit_id="event.attendee_list">
+        <!-- Date and Time Header -->
+        <xpath expr="//div[hasclass('row')][1]" position="after">
+            <div class="row" style="text-align: right; margin-bottom: 20px; font-size: 13px;">
+                <div class="col-12">
+                    <div style="display: inline-block; margin-right: 30px;">
+                        <span style="font-weight: bold;">Date:</span>
+                        <t t-out="event.date_begin.strftime('%d/%m/%Y')"/>
+                    </div>
+                    <div style="display: inline-block;">
+                        <span style="font-weight: bold;">Time:</span>
+                        <t t-out="event.date_begin.strftime('%H:%M')"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('col-4')][1]" position="replace">
+            <div class="col-4" style="margin-bottom: 20px; font-size: 13px;">
+                <!-- Logo and Company Name -->
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <img t-if="event.company_id.logo"
+                         t-att-src="'data:image/png;base64,%s' % (event.company_id.logo or '')"
+                         alt="Company Logo"
+                         style="height: 50px; margin-right: 10px;"/>
+                    <span style="font-size: 18px; font-weight: bold;">
+                        <t t-out="event.company_id.name"/>
+                    </span>
+                </div>
+                <!-- Vessel Information -->
+                <div style="margin-bottom: 8px;">
+                    <span style="font-weight: bold;">Vessel:</span>
+                    <t t-out="event.sequence"/>
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <span style="font-weight: bold;">From:</span>
+                    <t t-out="event.from_location_id.name"/>
+                </div>
+                <div>
+                    <span style="font-weight: bold;">To:</span>
+                    <t t-out="event.to_location_id.name"/>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Passenger Count Summary -->
+        <xpath expr="//div[hasclass('col-4')][2]" position="replace">
+            <div class="col-4 text-center" style="margin-bottom: 20px; font-size: 13px;">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Count</th>
+                            <th>Adult</th>
+                            <th>Infant</th>
+                            <th>Male</th>
+                            <th>Female</th>
+                            <th>Luggage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <t t-out="len(attendees)"/>
+                            </td>
+                            <td>
+                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age' and x.value_answer_id.name == 'Adult')])"/>
+                            </td>
+                            <td>
+                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age' and x.value_answer_id.name == 'Infant')])"/>
+                            </td>
+                            <td>
+                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind' and x.value_answer_id.name == 'Male')])"/>
+                            </td>
+                            <td>
+                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind' and x.value_answer_id.name == 'Female')])"/>
+                            </td>
+                            <td>
+                                <t t-out="sum(int(a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Lugg').value_text_box or 0) for a in attendees)"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </xpath>
+
+
+        <!-- Table Headers -->
+        <xpath expr="//table[hasclass('table', 'mt-3')]//thead/tr" position="replace">
+            <tr class="text-center">
+                <th>id</th>
+                <th>Ticket<br/>رقم التذكرة
+                </th>
+                <th>Full Name<br/>الاسم الكامل
+                </th>
+                <th>Birth Date<br/>تاريخ الميلاد
+                </th>
+                <th>NTLY<br/>الجنسية
+                </th>
+                <th>Pass S/N<br/>رقم الجواز
+                </th>
+                <th>CVIL ID<br/>رقم القومي
+                </th>
+                <th>Issue Date<br/>تاريخ الإصدار
+                </th>
+                <th>Ex Date<br/>تاريخ الانتهاء
+                </th>
+                <th>Age<br/>العمر
+                </th>
+                <th>Kind<br/>النوع
+                </th>
+                <th>Class<br/>الدرجة
+                </th>
+                <th>Pack<br/>عدد الحقائب
+                </th>
+                <th>Tag<br/>العلامة
+                </th>
+                <th>Lugg<br/>الوزن
+                </th>
+            </tr>
+        </xpath>
+
+        <!-- Data Rows -->
+        <xpath expr="//table[hasclass('table', 'mt-3')]//tbody" position="replace">
+            <tbody>
+                <t t-set="count" t-value="1"/>
+                <tr t-foreach="attendees" t-as="attendee" class="text-center">
+                    <t t-set="pax_name"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'First Name Arabic')"/>
+                    <t t-set="surname"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Surbame Arabic')"/>
+                    <t t-set="birth_date"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Date of Birth')"/>
+                    <t t-set="ntly"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Nationality')"/>
+                    <t t-set="pass_sn"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Passport S/N')"/>
+                    <t t-set="cvil_id"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'CVIL ID')"/>
+                    <t t-set="issue_date"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Issue Date')"/>
+                    <t t-set="exp_date"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Expiry Date')"/>
+                    <t t-set="age"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age')"/>
+                    <t t-set="kind"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind')"/>
+                    <t t-set="class"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Class')"/>
+                    <t t-set="pack"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Packing')"/>
+                    <t t-set="tag"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Tag')"/>
+                    <t t-set="lugg"
+                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Luggage')"/>
+                    <td>
+                        <t t-out="count"/>
+                    </td>
+                    <td>
+                        <t t-out="attendee.barcode"/>
+                    </td>
+                    <td>
+                        <t t-out="((pax_name.value_text_box or '') + ' ' + (surname.value_text_box or '')).strip()"/>
+                    </td>
+                    <td>
+                        <t t-out="birth_date.value_text_box if birth_date else ''"/>
+                    </td>
+                    <td>
+                        <t t-out="ntly.value_answer_id.name if ntly and ntly.value_answer_id else (ntly.value_text_box if ntly else '')"/>
+                    </td>
+                    <td>
+                        <t t-out="pass_sn.value_text_box if pass_sn else ''"/>
+                    </td>
+                    <td>
+                        <t t-out="cvil_id.value_text_box if cvil_id else ''"/>
+                    </td>
+                    <td>
+                        <t t-out="issue_date.value_text_box if issue_date else ''"/>
+                    </td>
+                    <td>
+                        <t t-out="exp_date.value_text_box if exp_date else ''"/>
+                    </td>
+                    <td>
+                        <t t-out="age.value_answer_id.name if age and age.value_answer_id else (age.value_text_box if age else '')"/>
+                    </td>
+                    <td>
+                        <t t-out="kind.value_answer_id.name if kind and kind.value_answer_id else (kind.value_text_box if kind else '')"/>
+                    </td>
+                    <td>
+                        <t t-out="class.value_answer_id.name if class and class.value_answer_id else (class.value_text_box if class else '')"/>
+                    </td>
+                    <td>
+                        <t t-out="pack.value_text_box if pack else ''"/>
+                    </td>
+                    <td>
+                        <t t-out="tag.value_text_box if tag else ''"/>
+                    </td>
+                    <td>
+                        <t t-out="lugg.value_text_box if lugg else ''"/>
+                    </td>
+                    <t t-set="count" t-value="count + 1"/>
+                </tr>
+            </tbody>
+        </xpath>
+
+        <!-- Nationality Summary -->
+        <xpath expr="//table[hasclass('table', 'mt-3')]" position="after">
+            <t t-set="all_nationalities"
+               t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.question_id.title == 'Nationality' and x.value_answer_id)"/>
+            <t t-set="unique_nationalities" t-value="list(set(all_nationalities.mapped('value_answer_id.name')))"/>
+            <div t-if="unique_nationalities" class="no-break" style="margin-top: 20px;">
+                <h4 style="text-align: center; font-weight: bold;">Nationality Summary</h4>
+                <table class="table table-bordered" style="width: 50%; margin: 0 auto;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">Nationality<br/>الجنسية
+                            </th>
+                            <th style="text-align: center;">Count<br/>العدد
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="unique_nationalities" t-as="nationality">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <t t-out="nationality"/>
+                                </td>
+                                <td style="text-align: center;">
+                                    <t t-out="len(all_nationalities.filtered(lambda x: x.value_answer_id.name == nationality))"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+            <div t-else="" style="text-align: center; color: gray; margin-top: 20px;">
+                No nationality data available.
+            </div>
+
+            <!-- Pack & Luggage Summary -->
+            <t t-set="all_pack"
+               t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.question_id.title == 'Packing' and x.value_text_box)"/>
+            <t t-set="all_lugg"
+               t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.question_id.title == 'Luggage' and x.value_text_box)"/>
+            <div class="no-break" style="margin-top: 40px;">
+                <h4 style="text-align: center; font-weight: bold;">Pack and Luggage Summary</h4>
+                <table class="table table-bordered" style="width: 60%; margin: 0 auto;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">Total Packs<br/>إجمالي الحقائب
+                            </th>
+                            <th style="text-align: center;">Total Luggage Weight<br/>إجمالي الوزن
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;">
+                                <t t-out="sum(int(p.value_text_box) if p.value_text_box and p.value_text_box.strip().isdigit() else 0 for p in all_pack)"/>
+                            </td>
+                            <td style="text-align: center;">
+                                <t t-out="sum(float(l.value_text_box) if l.value_text_box and l.value_text_box.replace('.', '', 1).isdigit() else 0 for l in all_lugg)"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </xpath>
+        <!--        </t>-->
+    </template>
+</odoo>
+
+        <!--<odoo>-->
+        <!--    <template id="inherit_event_attendee_list" inherit_id="event.attendee_list">-->
+
+        <!--        &lt;!&ndash; Date and Time Header &ndash;&gt;-->
+        <!--        <xpath expr="//div[hasclass('row')][1]" position="after">-->
+        <!--            <div class="row" style="text-align: right; margin-bottom: 20px; font-size: 13px;">-->
+        <!--                <div class="col-12">-->
+        <!--                    <div style="display: inline-block; margin-right: 30px;">-->
+        <!--                        <span style="font-weight: bold;">Date:</span>-->
+        <!--                        <t t-out="event.date_begin.strftime('%d/%m/%Y')"/>-->
+        <!--                    </div>-->
+        <!--                    <div style="display: inline-block;">-->
+        <!--                        <span style="font-weight: bold;">Time:</span>-->
+        <!--                        <t t-out="event.date_begin.strftime('%H:%M')"/>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </xpath>-->
+
+
+        <!--        <xpath expr="//div[hasclass('col-4')][1]" position="replace">-->
+        <!--            <div class="col-4" style="margin-bottom: 20px; font-size: 13px;">-->
+        <!--                &lt;!&ndash; Logo and Company Name &ndash;&gt;-->
+
+        <!--                <div style="display: flex; align-items: center; margin-bottom: 15px;">-->
+        <!--                    <img t-if="event.company_id.logo"-->
+        <!--                         t-att-src="'data:image/png;base64,%s' % (event.company_id.logo or '')"-->
+        <!--                         alt="Company Logo"-->
+        <!--                         style="height: 50px; margin-right: 10px;"/>-->
+        <!--                    <span style="font-size: 18px; font-weight: bold;">-->
+        <!--                        <t t-out="event.company_id.name"/>-->
+        <!--                    </span>-->
+        <!--                </div>-->
+
+        <!--                &lt;!&ndash; Vessel Information &ndash;&gt;-->
+
+        <!--                <div style="margin-bottom: 8px;">-->
+        <!--                    <span style="font-weight: bold;">Vessel:</span>-->
+        <!--                    <t t-out="event.sequence"/>-->
+        <!--                </div>-->
+        <!--                <div style="margin-bottom: 8px;">-->
+        <!--                    <span style="font-weight: bold;">From:</span>-->
+        <!--                    <t t-out="event.from_location_id.name"/>-->
+        <!--                </div>-->
+        <!--                <div>-->
+        <!--                    <span style="font-weight: bold;">To:</span>-->
+        <!--                    <t t-out="event.to_location_id.name"/>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </xpath>-->
+
+        <!--        &lt;!&ndash; Passenger Count Summary &ndash;&gt;-->
+        <!--        <xpath expr="//div[hasclass('col-4')][2]" position="replace">-->
+        <!--            <div class="col-4 text-center" style="margin-bottom: 20px; font-size: 13px;">-->
+        <!--                <table class="table table-bordered">-->
+        <!--                    <thead>-->
+        <!--                        <tr>-->
+        <!--                            <th>Count</th>-->
+        <!--                            <th>Adult</th>-->
+        <!--                            <th>Infant</th>-->
+        <!--                            <th>Male</th>-->
+        <!--                            <th>Female</th>-->
+        <!--                            <th>Luggage</th>-->
+        <!--                        </tr>-->
+        <!--                    </thead>-->
+        <!--                    <tbody>-->
+        <!--                        <tr>-->
+        <!--                            <td>-->
+        <!--                                <t t-out="len(attendees)"/>-->
+        <!--                            </td>-->
+        <!--                            <td>-->
+        <!--                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age' and x.value_answer_id.name == 'Adult')])"/>-->
+        <!--                            </td>-->
+        <!--                            <td>-->
+        <!--                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age' and x.value_answer_id.name == 'Infant')])"/>-->
+        <!--                            </td>-->
+        <!--                            <td>-->
+        <!--                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind' and x.value_answer_id.name == 'Male')])"/>-->
+        <!--                            </td>-->
+        <!--                            <td>-->
+        <!--                                <t t-out="len([a for a in attendees if a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind' and x.value_answer_id.name == 'Female')])"/>-->
+        <!--                            </td>-->
+        <!--                            <td>-->
+        <!--                                <t t-out="sum(int(a.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Lugg').value_text_box or 0) for a in attendees)"/>-->
+        <!--                            </td>-->
+        <!--                        </tr>-->
+        <!--                    </tbody>-->
+        <!--                </table>-->
+        <!--            </div>-->
+        <!--        </xpath>-->
+
+        <!--        <xpath expr="//table[hasclass('table', 'mt-3')]" position="before">-->
+        <!--            <style>-->
+        <!--                @page {-->
+        <!--                size: A4;-->
+        <!--                margin: 1.5cm;-->
+        <!--                }-->
+        <!--                table {-->
+        <!--                width: 100%;-->
+        <!--                border-collapse: collapse;-->
+        <!--                table-layout: fixed;-->
+        <!--                page-break-inside: auto;-->
+        <!--                }-->
+        <!--                thead {-->
+        <!--                display: table-header-group;-->
+        <!--                }-->
+        <!--                tbody {-->
+        <!--                display: table-row-group;-->
+        <!--                }-->
+        <!--                tr {-->
+        <!--                page-break-inside: auto; /* يسمح بالانقسام */-->
+        <!--                page-break-after: auto;-->
+        <!--                }-->
+        <!--                td, th {-->
+        <!--                word-wrap: break-word;-->
+        <!--                white-space: normal;-->
+        <!--                }-->
+        <!--            </style>-->
+        <!--        </xpath>-->
+        <!--        &lt;!&ndash; Table Headers &ndash;&gt;-->
+        <!--        <xpath expr="//table[hasclass('table', 'mt-3')]//thead/tr" position="replace"  >-->
+        <!--            <tr class="text-center">-->
+        <!--                <th>id</th>-->
+        <!--                <th>Ticket<br/>رقم التذكرة-->
+        <!--                </th>-->
+        <!--                &lt;!&ndash;                <th>First Name<br/>الاسم الأول&ndash;&gt;-->
+        <!--                &lt;!&ndash;                </th>&ndash;&gt;-->
+        <!--                &lt;!&ndash;                <th>Surname<br/>اسم العائلة&ndash;&gt;-->
+        <!--                &lt;!&ndash;                </th>&ndash;&gt;-->
+        <!--                <th>Full Name<br/>الاسم الكامل-->
+        <!--                </th>-->
+        <!--                <th>Birth Date<br/>تاريخ الميلاد-->
+        <!--                </th>-->
+        <!--                <th>NTLY<br/>الجنسية-->
+        <!--                </th>-->
+        <!--                <th>Pass S/N<br/>رقم الجواز-->
+        <!--                </th>-->
+        <!--                <th>CVIL ID<br/>رقم القومي-->
+        <!--                </th>-->
+        <!--                <th>Issue Date<br/>تاريخ الإصدار-->
+        <!--                </th>-->
+        <!--                <th>Ex Date<br/>تاريخ الانتهاء-->
+        <!--                </th>-->
+        <!--                <th>Age<br/>العمر-->
+        <!--                </th>-->
+        <!--                <th>Kind<br/>النوع-->
+        <!--                </th>-->
+        <!--                <th>Class<br/>الدرجة-->
+        <!--                </th>-->
+        <!--                <th>Pack<br/>عدد الحقائب-->
+        <!--                </th>-->
+        <!--                <th>Tag<br/>العلامة-->
+        <!--                </th>-->
+        <!--                <th>Lugg<br/>الوزن-->
+        <!--                </th>-->
+        <!--            </tr>-->
+        <!--        </xpath>-->
+
+
+        <!--        &lt;!&ndash; Data Rows &ndash;&gt;-->
+        <!--        <xpath expr="//table[hasclass('table', 'mt-3')]//tbody" position="replace">-->
+        <!--            <tbody>-->
+        <!--                <t t-set="count" t-value="1"/>-->
+        <!--                <tr t-foreach="attendees" t-as="attendee" class="text-center">-->
+
+        <!--                    &lt;!&ndash; Field Mappings &ndash;&gt;-->
+        <!--                    <t t-set="pax_name"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'First Name Arabic')"/>-->
+        <!--                    <t t-set="surname"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Surbame Arabic')"/>-->
+        <!--                    <t t-set="birth_date"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Date of Birth')"/>-->
+        <!--                    <t t-set="ntly"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Nationality')"/>-->
+        <!--                    <t t-set="pass_sn"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Passport S/N')"/>-->
+        <!--                    <t t-set="cvil_id"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'CVIL ID')"/>-->
+        <!--                    <t t-set="issue_date"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Issue Date')"/>-->
+        <!--                    <t t-set="exp_date"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Expiry Date')"/>-->
+        <!--                    <t t-set="age"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age')"/>-->
+        <!--                    <t t-set="kind"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind')"/>-->
+        <!--                    <t t-set="class"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Class')"/>-->
+        <!--                    <t t-set="pack"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Packing')"/>-->
+        <!--                    <t t-set="tag"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Tag')"/>-->
+        <!--                    <t t-set="lugg"-->
+        <!--                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Luggage')"/>-->
+
+
+        <!--                    &lt;!&ndash; Data Output &ndash;&gt;-->
+        <!--                    <td>-->
+        <!--                        <t t-out="count"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="attendee.barcode"/>-->
+        <!--                    </td>-->
+
+        <!--                    <td>-->
+        <!--                        <t t-out="((pax_name.value_text_box or '') + ' ' + (surname.value_text_box or '')).strip()"/>-->
+        <!--                    </td>-->
+
+        <!--                    <td>-->
+        <!--                        <t t-out="birth_date.value_text_box if birth_date else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="ntly.value_answer_id.name if ntly and ntly.value_answer_id else (ntly.value_text_box if ntly else '')"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="pass_sn.value_text_box if pass_sn else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="cvil_id.value_text_box if cvil_id else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="issue_date.value_text_box if issue_date else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="exp_date.value_text_box if exp_date else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="age.value_answer_id.name if age and age.value_answer_id else (age.value_text_box if age else '')"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="kind.value_answer_id.name if kind and kind.value_answer_id else (kind.value_text_box if kind else '')"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="class.value_answer_id.name if class and class.value_answer_id else (class.value_text_box if class else '')"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="pack.value_text_box if pack else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="tag.value_text_box if tag else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <t t-out="lugg.value_text_box if lugg else ''"/>-->
+        <!--                    </td>-->
+        <!--                    <t t-set="count" t-value="count + 1"/>-->
+        <!--                </tr>-->
+        <!--            </tbody>-->
+        <!--        </xpath>-->
+
+
+        <!--        &lt;!&ndash; Nationality Summary &ndash;&gt;-->
+        <!--        <xpath expr="//table[hasclass('table', 'mt-3')]" position="after">-->
+        <!--            <style>-->
+        <!--                .no-break {-->
+        <!--                page-break-before: avoid;-->
+        <!--                page-break-inside: avoid;-->
+        <!--                }-->
+        <!--            </style>-->
+        <!--            <t t-set="all_nationalities"-->
+        <!--               t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.question_id.title == 'Nationality' and x.value_answer_id)"/>-->
+        <!--            <t t-set="unique_nationalities" t-value="list(set(all_nationalities.mapped('value_answer_id.name')))"/>-->
+        <!--            <div t-if="unique_nationalities" class="no-break" style="margin-top: 20px;">-->
+        <!--                <h4 style="text-align: center; font-weight: bold;">Nationality Summary</h4>-->
+        <!--                <table class="table table-bordered" style="width: 50%; margin: 0 auto;">-->
+        <!--                    <thead>-->
+        <!--                        <tr>-->
+        <!--                            <th style="text-align: center;">Nationality<br/>الجنسية-->
+        <!--                            </th>-->
+        <!--                            <th style="text-align: center;">Count<br/>العدد-->
+        <!--                            </th>-->
+        <!--                        </tr>-->
+        <!--                    </thead>-->
+        <!--                    <tbody>-->
+        <!--                        <t t-foreach="unique_nationalities" t-as="nationality">-->
+        <!--                            <tr>-->
+        <!--                                <td style="text-align: center;">-->
+        <!--                                    <t t-out="nationality"/>-->
+        <!--                                </td>-->
+        <!--                                <td style="text-align: center;">-->
+        <!--                                    <t t-out="len(all_nationalities.filtered(lambda x: x.value_answer_id.name == nationality))"/>-->
+        <!--                                </td>-->
+        <!--                            </tr>-->
+        <!--                        </t>-->
+        <!--                    </tbody>-->
+        <!--                </table>-->
+        <!--            </div>-->
+        <!--            <div t-else="" style="text-align: center; color: gray; margin-top: 20px;">-->
+        <!--                No nationality data available.-->
+        <!--            </div>-->
+
+        <!--            &lt;!&ndash; Pack & Luggage Summary &ndash;&gt;-->
+        <!--            <t t-set="all_pack"-->
+        <!--               t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.question_id.title == 'Packing' and x.value_text_box)"/>-->
+        <!--            <t t-set="all_lugg"-->
+        <!--               t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.question_id.title == 'Luggage' and x.value_text_box)"/>-->
+
+        <!--            <div class="no-break" style="margin-top: 40px;">-->
+        <!--                <h4 style="text-align: center; font-weight: bold;">Pack and Luggage Summary</h4>-->
+        <!--                <table class="table table-bordered" style="width: 60%; margin: 0 auto;">-->
+        <!--                    <thead>-->
+        <!--                        <tr>-->
+        <!--                            <th style="text-align: center;">Total Packs<br/>إجمالي الحقائب-->
+        <!--                            </th>-->
+        <!--                            <th style="text-align: center;">Total Luggage Weight<br/>إجمالي الوزن-->
+        <!--                            </th>-->
+        <!--                        </tr>-->
+        <!--                    </thead>-->
+        <!--                    <tbody>-->
+        <!--                        <tr>-->
+        <!--                            <td style="text-align: center;">-->
+        <!--                                <t t-out="sum(int(p.value_text_box) if p.value_text_box and p.value_text_box.strip().isdigit() else 0 for p in all_pack)"/>-->
+        <!--                            </td>-->
+        <!--                            <td style="text-align: center;">-->
+        <!--                                <t t-out="sum(float(l.value_text_box) if l.value_text_box and l.value_text_box.replace('.', '', 1).isdigit() else 0 for l in all_lugg)"/>-->
+        <!--                            </td>-->
+        <!--                        </tr>-->
+        <!--                    </tbody>-->
+        <!--                </table>-->
+        <!--            </div>-->
+        <!--        </xpath>-->
+        <!--    </template>-->
+        <!--</odoo>-->

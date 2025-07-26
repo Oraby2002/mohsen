@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_event_event_tree_inherit_custom" model="ir.ui.view">
+        <field name="name">event.event.tree.inherit.custom</field>
+        <field name="model">event.event</field>
+        <field name="inherit_id" ref="event.view_event_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="sequence"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_event_event_kanban_inherit_custom" model="ir.ui.view">
+        <field name="name">event.event.kanban.inherit.custom</field>
+        <field name="model">event.event</field>
+        <field name="inherit_id" ref="event.view_event_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="sequence"/>
+            </xpath>
+            <xpath expr="//div[contains(@class, 'd-flex') and contains(@class, 'ps-1')]" position="after">
+                <div t-if="record.sequence.value" class="d-flex ps-1">
+                    <span t-esc="record.sequence.value" class="ms-1" style="font-size: 15px; font-weight: bold;"/>
+                </div>            
+            </xpath>
+        </field>
+    </record>   
+
+    <record id="view_event_form_inherit_custom" model="ir.ui.view">
+        <field name="name">event.event.view.form.inherit.custom</field>
+        <field name="model">event.event</field>
+        <field name="inherit_id" ref="event.view_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='name']" position="before">
+                <field name="sequence" style="font-size: 22px; font-weight: bold;" readonly="0"/>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="from_location_id"/>
+                <field name="to_location_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_event_registration_form_inherit_custom" model="ir.ui.view">
+        <field name="name">event.registration.form.inherit.custom</field>
+        <field name="model">event.registration</field>
+        <field name="inherit_id" ref="event.view_event_registration_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_closed']" position="after">
+                <field name="no_of_luggage"/>
+                <field name="luggage_weight"/>
+            </xpath>
+            <!--<xpath expr="//button[@name='action_cancel']" position="after">-->
+            <!--    <button name="action_clone_data" string="Clone" type="object" data-hotkey="l" invisible="state == 'cancel'"/>-->
+            <!--</xpath>-->
+        </field>
+    </record>
+
+    <record id="view_event_registration_tree_inherit_custom" model="ir.ui.view">
+        <field name="name">event.registration.tree.inherit.custom</field>
+        <field name="model">event.registration</field>
+        <field name="inherit_id" ref="event.view_event_registration_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='event_ticket_id']" position="after">
+                <field name="no_of_luggage"/>
+                <field name="luggage_weight"/>
+            </xpath>
+          
+        </field>
+    </record>
+</odoo>

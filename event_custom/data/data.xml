@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_trip_event_event" model="ir.sequence">
+            <field name="name">Trip</field>
+            <field name="code">event.event</field>
+            <field name="prefix">TP</field>
+            <field name="padding">3</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="action_clone_selected_records" model="ir.actions.server">
+            <field name="name">Clone</field>
+            <field name="model_id" ref="event_custom.model_event_registration"/>
+            <field name="binding_model_id" ref="event_custom.model_event_registration"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+records.action_clone_data()
+            </field>
+        </record>
+    </data>
+</odoo>

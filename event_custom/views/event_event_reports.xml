@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="event.attendee_list">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="page">
+
+
+                    <div class="row text-center">
+                        <h3>PASSENGER MANIFEST</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <span>
+                                <b>Vessel:</b>
+                            </span>
+                            <br/>
+                            <span>
+                                <b>Voyage From:</b>
+                                <t t-out="event.from_location_id.name"/>
+                            </span>
+                            <br/>
+                            <span>
+                                <b>To:</b>
+                                <t t-out="event.to_location_id.name"/>
+                            </span>
+                        </div>
+                        <t t-set="adult"
+                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'ADULT')"/>
+                        <t t-set="infant"
+                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'INFANT')"/>
+                        <t t-set="male"
+                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'Male')"/>
+                        <t t-set="female"
+                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'Female')"/>
+                        <t t-set="luggage_weight" t-value="sum(attendees.mapped('luggage_weight'))"/>
+                        <t t-set="luggage" t-value="sum(attendees.mapped('no_of_luggage'))"/>
+                        <div class="col-4">
+                            <table class="table table-bordered mt-3">
+                                <thead>
+                                    <th>Count</th>
+                                    <!--                                <th>child</th>-->
+                                    <th>Adult</th>
+                                    <th>Infant</th>
+                                    <th>Male</th>
+                                    <th>Female</th>
+                                    <th>Luggage</th>
+                                    <th>No.Pack</th>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <t t-out="len(attendees)"/>
+                                        </td>
+                                        <td>
+                                            <t t-out="len(adult)"/>
+                                        </td>
+                                        <!--                                    <td><t t-out="len(child)"/></td>-->
+                                        <td>
+                                            <t t-out="len(infant)"/>
+                                        </td>
+                                        <td>
+                                            <t t-out="len(male)"/>
+                                        </td>
+                                        <td>
+                                            <t t-out="len(female)"/>
+                                        </td>
+                                        <td>
+                                            <t t-out="luggage_weight"/>
+                                        </td>
+                                        <td>
+                                            <t t-out="luggage"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="width: 100%; overflow-x: auto;page-break-inside: avoid;">
+                        <table class="table mt-3"
+                               style="page-break-inside: avoid;font-size: 12px; width: 100%; table-layout: auto;">
+                            <thead>
+                                <tr class="text-start">
+                                    <th>Ticket</th>
+                                    <th>First Name</th>
+                                    <th>Surname</th>
+                                    <th>Birth Date</th>
+                                    <th>NTLY</th>
+                                    <th>Pass S/N</th>
+                                    <th>Issue Date</th>
+                                    <th>Ex Date</th>
+                                    <th>Age</th>
+                                    <th>Kind</th>
+                                    <th>Class</th>
+                                    <th>Pack</th>
+                                    <th>Tag</th>
+                                    <th>Lugg</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="count" t-value="1"/>
+                                <tr t-foreach="attendees" t-as="attendee">
+                                    <t t-set="pax_name"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'First Name')"/>
+                                    <t t-set="father_name"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Surname')"/>
+                                    <t t-set="birth_date"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Date of Birth')"/>
+                                    <t t-set="ntly"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Nationality')"/>
+                                    <t t-set="pass_sn"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Passport S/N')"/>
+                                    <t t-set="issue_date"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Issue Date')"/>
+                                    <t t-set="exp_date"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Expiry Date')"/>
+                                    <t t-set="age"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age')"/>
+                                    <t t-set="kind"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind')"/>
+                                    <t t-set="class"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Class')"/>
+                                    <t t-set="pack"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Packing')"/>
+                                    <t t-set="tag"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Tag')"/>
+                                    <t t-set="lugg"
+                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Luggage')"/>
+
+
+                                    <td>
+                                        <t t-out="count"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="attendee.barcode"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="pax_name.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="father_name.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="birth_date.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="ntly.value_answer_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="pass_sn.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="issue_date.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="exp_date.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="age.value_answer_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="kind.value_answer_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="class.value_answer_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="pack.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="tag.value_text_box"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="lugg.value_text_box"/>
+                                    </td>
+                                    <t t-set="count" t-value="count+1"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="boarding_pass_template">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="attendee">
+                <t t-set="event" t-value="attendee.event_id"/>
+                <t t-set="ntly"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Nationality')"/>
+                <t t-set="pass_sn"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Passport S/N')"/>
+                <t t-set="age"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age')"/>
+                <t t-set="class"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Class')"/>
+                <style>
+                    .rotate-div{
+                    -webkit-transform: rotate(90deg);
+                    -moz-transform: rotate(90deg);
+                    -o-transform: rotate(90deg);
+                    -ms-transform: rotate(90deg);
+                    transform: rotate(90deg);
+                    display:inline-block;
+                    }
+                    .p-small{
+                    font-size:9px;
+                    }
+                </style>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-2">
+
+                            <span class="rotate-div" style="padding:50px;"/>
+                            <img t-attf-src="/report/barcode/Code128/{{ attendee.barcode }}?&amp;width=200&amp;height=40&amp;quiet=0"
+                                 alt="Barcode" style="transform: rotate(90deg);-webkit-transform: rotate(90deg);"/>
+                        </div>
+                        <div class="col-2">
+                            <span class="rotate-div" style="padding: 0px 0px 0px 80px;margin-top:50px">
+                                <t t-out="attendee.barcode"/>
+                            </span>
+                        </div>
+                        <div class="col-5"/>
+                        <div class="col-3">
+                            <div class="rotate-div"/>
+                            <div class="p-small" style="margin-top:40px;margin-left:10px">
+                                <t t-out="attendee.name"/>
+                            </div>
+                            <div class="p-small" style="margin-top:12px">
+                                <t t-out="event.from_location_id.name"/>
+                            </div>
+                            <div class="p-small" style="margin-top:12px">
+                                <t t-out="event.to_location_id.name"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"/>
+                        <div class="col-6">
+                            <div class="text-center" style="padding-top:115px">
+                                <span>
+                                    <t t-out="attendee.barcode"/>
+                                </span>
+                            </div>
+                            <div class="text-center">
+                                <img t-attf-src="/report/barcode/Code128/{{ attendee.barcode }}?&amp;width=100&amp;height=30&amp;quiet=0"
+                                     alt="Barcode"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="page-break-after: always;">
+                    <br/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="registration_invoice_template">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="attendee">
+                <t t-set="event" t-value="attendee.event_id"/>
+                <t t-set="ntly"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Nationality')"/>
+                <t t-set="pass_sn"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Passport S/N')"/>
+                <t t-set="age"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age')"/>
+                <t t-set="class"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Class')"/>
+                <t t-set="fare"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Fare')"/>
+                <t t-set="issuer"
+                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Issuer')"/>
+
+                <table class="table table-bordered" style="width:100%; font-size: 10px; border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 40%; vertical-align: top; padding: 4px;">
+                                <img t-if="event.company_id.logo"
+                                     t-att-src="image_data_uri(event.company_id.logo)"
+                                     style="max-height: 30px; display: block; margin-bottom: 5px;"
+                                     alt="Logo"/>
+                                <strong>
+                                    <t t-out="event.company_id.name"/>
+                                </strong>
+                                <br/>
+                                <small>PASSENGER TICKET (NON-TRANSFERABLE)</small>
+                            </td>
+
+                            <td style="width: 40%; vertical-align: top; padding: 4px;">
+                                <small>
+                                    <b>Ticket Serial:</b>
+                                    <t t-out="attendee.barcode"/>
+                                </small>
+                                <br/>
+                                <small>
+                                    <b>Passenger Name:</b>
+                                    <t t-out="attendee.name"/>
+                                </small>
+                                <br/>
+                                <small>
+                                    <b>Nationality:</b>
+                                    <t t-out="ntly.value_answer_id.name if ntly and ntly.value_answer_id else ''"/>
+                                </small>
+                                <br/>
+                                <small>
+                                    <b>Passport No:</b>
+                                    <t t-out="pass_sn.value_text_box if pass_sn else ''"/>
+                                </small>
+                                <br/>
+                                <small>
+                                    <b>Age:</b>
+                                    <t t-out="age.value_answer_id.name if age and age.value_answer_id else ''"/>
+                                </small>
+                            </td>
+
+                            <td class="text-center" rowspan="2"
+                                style="width: 20%; vertical-align: middle; padding: 4px;">
+                                <t t-if="attendee.barcode">
+                                    <img t-attf-src="/report/barcode/Code128/{{ attendee.barcode }}?&amp;width=150&amp;height=150&amp;quiet=0"
+                                         alt="Barcode"
+                                         style="transform: rotate(90deg); max-height:120px;"/>
+                                </t>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 4px;">
+                                <small>
+                                    <b>Issue Date:</b>
+                                    <t t-out="attendee.create_date"/>
+                                </small>
+                                <br/>
+                                <small>
+                                    <b>Issuer:</b>
+                                    <t t-out="attendee.create_uid.name"/>
+                                </small>
+                            </td>
+                            <td style="padding: 4px;">
+                                <small>
+                                    <b>Trip:</b>
+                                    <t t-out="event.from_location_id.name"/>
+                                </small>
+                                <br/>
+                                <small>
+                                    <b>Total:</b>
+                                    <t t-out="attendee.sale_order_id.amount_total"/>
+                                    KWD
+                                </small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Ticket Type:</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Class</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td>From:
+                            <t t-out="event.from_location_id.name"/>
+                            To:
+                            <t t-out="event.to_location_id.name"/>
+                        </td>
+                        <td>
+                            <t t-out="event.date_begin" t-options='{"widget": "date"}'/>
+                        </td>
+                        <td>
+                            <t t-out="event.date_begin"
+                               t-options='{"widget": "datetime", "time_only": True, "hide_seconds": True, "tz_name": event.date_tz}'/>
+                        </td>
+                        <td>
+                            <t t-out="class.value_answer_id.name"/>
+                        </td>
+                        <td>
+                            <span t-field="attendee.state"/>
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-bordered">
+                    <tr style="font-size: 12px;">
+                        <td>
+                            <span t-field="event.note"/>
+                        </td>
+                    </tr>
+                </table>
+                <div style="page-break-after: always;">
+                    <br/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+
+    <record id="paperformat_attendee_list" model="report.paperformat">
+        <field name="name">Attendee List</field>
+        <field name="default" eval="False"/>
+        <field name="disable_shrinking" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="paperformat_boarding_pass" model="report.paperformat">
+        <field name="name">Boarding Pass</field>
+        <field name="default" eval="False"/>
+        <field name="disable_shrinking" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_height">80</field>
+        <field name="page_width">94</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">100</field>
+        <field name="header_spacing">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+
+    <record id="event.action_report_event_registration_badge" model="ir.actions.report">
+        <field name="name">Boarding Pass</field>
+        <field name="model">event.registration</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">event_custom.boarding_pass_template</field>
+        <field name="report_file">event_custom.boarding_pass_template</field>
+        <field name="print_report_name">'Boarding Pass - %s - %s' % ((object.event_id.name or 'Event').replace('/',''),
+            (object.name or '').replace('/',''))
+        </field>
+        <field name="binding_model_id" ref="event.model_event_registration"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="event_custom.paperformat_boarding_pass"/>
+    </record>
+
+    <record id="action_report_event_registration_invoice" model="ir.actions.report">
+        <field name="name">Invoice</field>
+        <field name="model">event.registration</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">event_custom.registration_invoice_template</field>
+        <field name="report_file">event_custom.registration_invoice_template</field>
+        <field name="print_report_name">'Invoice - %s - %s' % ((object.event_id.name or 'Event').replace('/',''),
+            (object.name or '').replace('/',''))
+        </field>
+        <field name="binding_model_id" ref="event.model_event_registration"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="event_custom.paperformat_boarding_pass"/>
+    </record>
+
+    <record id="event.action_report_event_event_attendee_list" model="ir.actions.report">
+        <field name="name">Attendee List</field>
+        <field name="model">event.event</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">event.event_event_attendee_list</field>
+        <field name="report_file">event.event_event_attendee_list</field>
+        <field name="binding_model_id" ref="event.model_event_event"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Attendee List - %s' % (object.name)</field>
+        <field name="paperformat_id" ref="event_custom.paperformat_attendee_list"/>
+    </record>
+
+    <record id="event.action_report_event_registration_attendee_list" model="ir.actions.report">
+        <field name="name">Attendee List</field>
+        <field name="model">event.registration</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">event.event_registration_attendee_list</field>
+        <field name="report_file">event.event_registration_attendee_list</field>
+        <field name="binding_model_id" ref="event.model_event_registration"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Attendee List'</field>
+        <field name="paperformat_id" ref="event_custom.paperformat_attendee_list"/>
+    </record>
+</odoo>
