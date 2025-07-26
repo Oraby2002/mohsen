@@ -8,7 +8,7 @@
     'description': """Event Customization""",
     'author': 'Kanak Infosystems LLP.',
     'website': 'https://www.kanakinfosystems.com',
-    'depends': ['event_ticket_qr_scanner', 'website_event_track'],
+    'depends': ['event_ticket_qr_scanner', 'website_event_track', 'event'],
     'data': [
         'data/data.xml',
         'views/event_event_views.xml',

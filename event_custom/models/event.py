@@ -6,13 +6,14 @@ from odoo.tools.misc import formatLang
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from odoo.exceptions import UserError
 
+# _compute_kanban_state_label
 
 class EventEvent(models.Model):
     _inherit = 'event.event'
 
     from_location_id = fields.Many2one("event.track.location", "From Location")
     to_location_id = fields.Many2one("event.track.location", "To Location")
-    sequence = fields.Char(string="Event Sequence", copy=True)
+    sequence = fields.Char(string="Event Sequence", copy=True,store=True,)
 
     @api.model
     def create(self, vals):
