@@ -2,184 +2,184 @@
 <odoo>
     <template id="event.attendee_list">
         <t t-call="web.html_container">
-            <t t-call="web.basic_layout">
-                <div class="page">
+<!--            <t t-call="web.basic_layout">-->
 
 
-                    <div class="row text-center">
-                        <h3>PASSENGER MANIFEST</h3>
+<!--                <div class="page">-->
+                <div class="row text-center">
+                    <h3>PASSENGER MANIFEST</h3>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <span>
+                            <b>Vessel:</b>
+                        </span>
+                        <br/>
+                        <span>
+                            <b>Voyage From:</b>
+                            <t t-out="event.from_location_id.name"/>
+                        </span>
+                        <br/>
+                        <span>
+                            <b>To:</b>
+                            <t t-out="event.to_location_id.name"/>
+                        </span>
                     </div>
-                    <div class="row">
-                        <div class="col-4">
-                            <span>
-                                <b>Vessel:</b>
-                            </span>
-                            <br/>
-                            <span>
-                                <b>Voyage From:</b>
-                                <t t-out="event.from_location_id.name"/>
-                            </span>
-                            <br/>
-                            <span>
-                                <b>To:</b>
-                                <t t-out="event.to_location_id.name"/>
-                            </span>
-                        </div>
-                        <t t-set="adult"
-                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'ADULT')"/>
-                        <t t-set="infant"
-                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'INFANT')"/>
-                        <t t-set="male"
-                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'Male')"/>
-                        <t t-set="female"
-                           t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'Female')"/>
-                        <t t-set="luggage_weight" t-value="sum(attendees.mapped('luggage_weight'))"/>
-                        <t t-set="luggage" t-value="sum(attendees.mapped('no_of_luggage'))"/>
-                        <div class="col-4">
-                            <table class="table table-bordered mt-3">
-                                <thead>
-                                    <th>Count</th>
-                                    <!--                                <th>child</th>-->
-                                    <th>Adult</th>
-                                    <th>Infant</th>
-                                    <th>Male</th>
-                                    <th>Female</th>
-                                    <th>Luggage</th>
-                                    <th>No.Pack</th>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <t t-out="len(attendees)"/>
-                                        </td>
-                                        <td>
-                                            <t t-out="len(adult)"/>
-                                        </td>
-                                        <!--                                    <td><t t-out="len(child)"/></td>-->
-                                        <td>
-                                            <t t-out="len(infant)"/>
-                                        </td>
-                                        <td>
-                                            <t t-out="len(male)"/>
-                                        </td>
-                                        <td>
-                                            <t t-out="len(female)"/>
-                                        </td>
-                                        <td>
-                                            <t t-out="luggage_weight"/>
-                                        </td>
-                                        <td>
-                                            <t t-out="luggage"/>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div style="width: 100%; overflow-x: auto;page-break-inside: avoid;">
-                        <table class="table mt-3"
-                               style="page-break-inside: avoid;font-size: 12px; width: 100%; table-layout: auto;">
+                    <t t-set="adult"
+                       t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'ADULT')"/>
+                    <t t-set="infant"
+                       t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'INFANT')"/>
+                    <t t-set="male"
+                       t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'Male')"/>
+                    <t t-set="female"
+                       t-value="attendees.mapped('registration_answer_ids').filtered(lambda x: x.value_answer_id.name == 'Female')"/>
+                    <t t-set="luggage_weight" t-value="sum(attendees.mapped('luggage_weight'))"/>
+                    <t t-set="luggage" t-value="sum(attendees.mapped('no_of_luggage'))"/>
+                    <div class="col-4">
+                        <table class="table table-bordered mt-3">
                             <thead>
-                                <tr class="text-start">
-                                    <th>Ticket</th>
-                                    <th>First Name</th>
-                                    <th>Surname</th>
-                                    <th>Birth Date</th>
-                                    <th>NTLY</th>
-                                    <th>Pass S/N</th>
-                                    <th>Issue Date</th>
-                                    <th>Ex Date</th>
-                                    <th>Age</th>
-                                    <th>Kind</th>
-                                    <th>Class</th>
-                                    <th>Pack</th>
-                                    <th>Tag</th>
-                                    <th>Lugg</th>
-                                </tr>
+                                <th>Count</th>
+                                <!--                                <th>child</th>-->
+                                <th>Adult</th>
+                                <th>Infant</th>
+                                <th>Male</th>
+                                <th>Female</th>
+                                <th>Luggage</th>
+                                <th>No.Pack</th>
                             </thead>
                             <tbody>
-                                <t t-set="count" t-value="1"/>
-                                <tr t-foreach="attendees" t-as="attendee">
-                                    <t t-set="pax_name"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'First Name')"/>
-                                    <t t-set="father_name"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Surname')"/>
-                                    <t t-set="birth_date"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Date of Birth')"/>
-                                    <t t-set="ntly"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Nationality')"/>
-                                    <t t-set="pass_sn"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Passport S/N')"/>
-                                    <t t-set="issue_date"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Issue Date')"/>
-                                    <t t-set="exp_date"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Expiry Date')"/>
-                                    <t t-set="age"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age')"/>
-                                    <t t-set="kind"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind')"/>
-                                    <t t-set="class"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Class')"/>
-                                    <t t-set="pack"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Packing')"/>
-                                    <t t-set="tag"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Tag')"/>
-                                    <t t-set="lugg"
-                                       t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Luggage')"/>
-
-
+                                <tr>
                                     <td>
-                                        <t t-out="count"/>
+                                        <t t-out="len(attendees)"/>
                                     </td>
                                     <td>
-                                        <t t-out="attendee.barcode"/>
+                                        <t t-out="len(adult)"/>
+                                    </td>
+                                    <!--                                    <td><t t-out="len(child)"/></td>-->
+                                    <td>
+                                        <t t-out="len(infant)"/>
                                     </td>
                                     <td>
-                                        <t t-out="pax_name.value_text_box"/>
+                                        <t t-out="len(male)"/>
                                     </td>
                                     <td>
-                                        <t t-out="father_name.value_text_box"/>
+                                        <t t-out="len(female)"/>
                                     </td>
                                     <td>
-                                        <t t-out="birth_date.value_text_box"/>
+                                        <t t-out="luggage_weight"/>
                                     </td>
                                     <td>
-                                        <t t-out="ntly.value_answer_id.name"/>
+                                        <t t-out="luggage"/>
                                     </td>
-                                    <td>
-                                        <t t-out="pass_sn.value_text_box"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="issue_date.value_text_box"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="exp_date.value_text_box"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="age.value_answer_id.name"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="kind.value_answer_id.name"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="class.value_answer_id.name"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="pack.value_text_box"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="tag.value_text_box"/>
-                                    </td>
-                                    <td>
-                                        <t t-out="lugg.value_text_box"/>
-                                    </td>
-                                    <t t-set="count" t-value="count+1"/>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </t>
+                <div style="width: 100%; overflow-x: auto;page-break-inside: avoid;">
+                    <table class="table mt-3"
+                           style="page-break-inside: avoid;font-size: 12px; width: 100%; table-layout: auto;">
+                        <thead>
+                            <tr class="text-start">
+                                <th>Ticket</th>
+                                <th>First Name</th>
+                                <th>Surname</th>
+                                <th>Birth Date</th>
+                                <th>NTLY</th>
+                                <th>Pass S/N</th>
+                                <th>Issue Date</th>
+                                <th>Ex Date</th>
+                                <th>Age</th>
+                                <th>Kind</th>
+                                <th>Class</th>
+                                <th>Pack</th>
+                                <th>Tag</th>
+                                <th>Lugg</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="count" t-value="1"/>
+                            <tr t-foreach="attendees" t-as="attendee">
+                                <t t-set="pax_name"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'First Name')"/>
+                                <t t-set="father_name"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Surname')"/>
+                                <t t-set="birth_date"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Date of Birth')"/>
+                                <t t-set="ntly"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Nationality')"/>
+                                <t t-set="pass_sn"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Passport S/N')"/>
+                                <t t-set="issue_date"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Issue Date')"/>
+                                <t t-set="exp_date"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Pass Expiry Date')"/>
+                                <t t-set="age"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Age')"/>
+                                <t t-set="kind"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Kind')"/>
+                                <t t-set="class"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Class')"/>
+                                <t t-set="pack"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Packing')"/>
+                                <t t-set="tag"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Tag')"/>
+                                <t t-set="lugg"
+                                   t-value="attendee.registration_answer_ids.filtered(lambda x: x.question_id.title == 'Luggage')"/>
+
+
+                                <td>
+                                    <t t-out="count"/>
+                                </td>
+                                <td>
+                                    <t t-out="attendee.barcode"/>
+                                </td>
+                                <td>
+                                    <t t-out="pax_name.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="father_name.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="birth_date.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="ntly.value_answer_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-out="pass_sn.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="issue_date.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="exp_date.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="age.value_answer_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-out="kind.value_answer_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-out="class.value_answer_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-out="pack.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="tag.value_text_box"/>
+                                </td>
+                                <td>
+                                    <t t-out="lugg.value_text_box"/>
+                                </td>
+                                <t t-set="count" t-value="count+1"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--                </div>-->
+<!--            </t>-->
         </t>
     </template>
 
@@ -407,8 +407,8 @@
         <field name="page_height">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Landscape</field>
-        <field name="margin_top">0</field>
-        <field name="margin_bottom">0</field>
+        <field name="margin_top">12</field>
+        <field name="margin_bottom">10</field>
         <field name="margin_left">0</field>
         <field name="margin_right">0</field>
         <field name="dpi">96</field>
@@ -422,8 +422,8 @@
         <field name="page_height">80</field>
         <field name="page_width">94</field>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">20</field>
-        <field name="margin_bottom">100</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">5</field>
         <field name="header_spacing">0</field>
         <field name="margin_left">0</field>
         <field name="margin_right">0</field>
@@ -450,7 +450,7 @@
         <field name="model">event.registration</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">event_custom.registration_invoice_template</field>
-        <field name="report_file">event_custom.registration_invoice_template</field>
+        <field name="report_file">event.registration_invoice_template</field>
         <field name="print_report_name">'Invoice - %s - %s' % ((object.event_id.name or 'Event').replace('/',''),
             (object.name or '').replace('/',''))
         </field>
@@ -460,7 +460,7 @@
     </record>
 
     <record id="event.action_report_event_event_attendee_list" model="ir.actions.report">
-        <field name="name">Attendee List</field>
+        <field name="name">Attendee List1</field>
         <field name="model">event.event</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">event.event_event_attendee_list</field>
@@ -472,7 +472,7 @@
     </record>
 
     <record id="event.action_report_event_registration_attendee_list" model="ir.actions.report">
-        <field name="name">Attendee List</field>
+        <field name="name">Attendee List2</field>
         <field name="model">event.registration</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">event.event_registration_attendee_list</field>
