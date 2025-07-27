@@ -6,14 +6,14 @@ from odoo.tools.misc import formatLang
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from odoo.exceptions import UserError
 
-# _compute_kanban_state_label
 
+# _compute_kanban_state_label
 class EventEvent(models.Model):
     _inherit = 'event.event'
 
     from_location_id = fields.Many2one("event.track.location", "From Location")
     to_location_id = fields.Many2one("event.track.location", "To Location")
-    sequence = fields.Char(string="Event Sequence", copy=True,store=True,)
+    sequence = fields.Char(string="Event Sequence", copy=True, store=True)
 
     @api.model
     def create(self, vals):
@@ -22,14 +22,15 @@ class EventEvent(models.Model):
         return super(EventEvent, self).create(vals)
 
     def write(self, vals):
-        # منع تغيير sequence تلقائيًا عند تغيير الـ state
         if "sequence" in vals and not self.env.context.get("manual_sequence_edit"):
-            for rec in self:
-                next_seq = self.env["ir.sequence"].next_by_code("event.event") or "/"
-                if vals["sequence"] == next_seq and rec.sequence and vals["sequence"] != rec.sequence:
-                    vals.pop("sequence")
-                    break
+            vals.pop("sequence", None)  # منع التغيير التلقائي لحقل sequence
         return super(EventEvent, self).write(vals)
+
+    def action_save_with_manual_sequence(self):
+        # حفظ التعديلات مع تمرير manual_sequence_edit=True في السياق
+        # جمع القيم المحدثة من النموذج
+        vals = {'sequence': self.sequence}
+        return self.with_context(manual_sequence_edit=True).write(vals)
 
     @api.depends('event_registrations_sold_out', 'seats_limited', 'seats_max', 'seats_available')
     @api.depends_context('name_with_seats_availability')

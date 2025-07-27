@@ -9,6 +9,7 @@
             <xpath expr="//field[@name='name']" position="before">
                 <field name="sequence"/>
             </xpath>
+
         </field>
     </record>
 
@@ -20,13 +21,14 @@
             <xpath expr="//field[@name='name']" position="before">
                 <field name="sequence"/>
             </xpath>
+
             <xpath expr="//div[contains(@class, 'd-flex') and contains(@class, 'ps-1')]" position="after">
                 <div t-if="record.sequence.value" class="d-flex ps-1">
                     <span t-esc="record.sequence.value" class="ms-1" style="font-size: 15px; font-weight: bold;"/>
-                </div>            
+                </div>
             </xpath>
         </field>
-    </record>   
+    </record>
 
     <record id="view_event_form_inherit_custom" model="ir.ui.view">
         <field name="name">event.event.view.form.inherit.custom</field>
@@ -39,6 +41,13 @@
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="from_location_id"/>
                 <field name="to_location_id"/>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_save_with_manual_sequence"
+                        string="Save Sequence"
+                        type="object"
+                        class="btn-primary"
+                        context="{'manual_sequence_edit': True}"/>
             </xpath>
         </field>
     </record>
@@ -67,7 +76,7 @@
                 <field name="no_of_luggage"/>
                 <field name="luggage_weight"/>
             </xpath>
-          
+
         </field>
     </record>
 </odoo>
